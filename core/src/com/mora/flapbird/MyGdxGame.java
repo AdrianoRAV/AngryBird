@@ -43,14 +43,24 @@ public class MyGdxGame extends ApplicationAdapter {
 		variacao += Gdx.graphics.getDeltaTime() * 7; //velocidade de bater asas
 		velocidadeQueda ++;
 
-		if ( posicaoInicialVertical > 0 ){
 
+		if (variacao > 2) variacao = 0;
+
+
+
+		if ( Gdx.input.justTouched() )
+		{
+
+			velocidadeQueda = -12;
+
+		}
+
+		if ( posicaoInicialVertical > 0 || velocidadeQueda < 0)
 			posicaoInicialVertical = posicaoInicialVertical - velocidadeQueda;
-		}
 
-		if (variacao > 2){
-			variacao = 0;
-		}
+
+
+
 
 		batch.begin();
 		batch.draw(fundo,0,0,larguraDispositivo,alturaDispositivo);
