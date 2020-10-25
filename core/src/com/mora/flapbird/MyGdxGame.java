@@ -21,7 +21,9 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Texture fundo;
 	private Texture canoBaixo;
 	private Texture canoTopo;
+	private Texture gameOver;
 	private BitmapFont fonte;
+	private BitmapFont mensagem;
 	 private Circle passaroCirculo;
 	 private Rectangle retanguloCanoTopo;
 	 private Rectangle retanguloCanoBaixo;
@@ -31,7 +33,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	private  int movimento = 30;
 	private int larguraDispositivo;
 	private int alturaDispositivo;
-	private  int estadoJogo = 0; // 0 -> jogo não iniciado ,1 -> jogo iniciado
+	private  int estadoJogo = 0; // 0 -> jogo não iniciado ,1 -> jogo iniciado, 2 -> Game Over
 	private int pontuacao = 0;
 
 
@@ -53,23 +55,28 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		randomico = new Random();
 		fonte = new BitmapFont();
+
 		passaroCirculo = new Circle();
 		/*retanguloCanoTopo = new Rectangle();
 		retanguloCanoBaixo = new  Rectangle();
 		shape = new ShapeRenderer();*/
-
-
 		fonte.setColor(Color.WHITE);
 		fonte.getData().setScale(6);
+
+		mensagem = new BitmapFont();
+		mensagem.setColor(Color.WHITE);
+		mensagem.getData().setScale(3);
 
 		passaro = new Texture[3];
 		passaro[0] = new Texture("passaro1.png");
 		passaro[1] = new Texture("passaro2.png");
 		passaro[2] = new Texture("passaro3.png");
 
+
 		fundo = new Texture("fundo.png");
 		canoBaixo = new Texture("cano_baixo.png");
 		canoTopo = new Texture("cano_topo.png");
+		gameOver = new Texture("game_over.png");
 
 		larguraDispositivo = Gdx.graphics.getWidth();
 		alturaDispositivo = Gdx.graphics.getHeight();
@@ -94,30 +101,24 @@ public class MyGdxGame extends ApplicationAdapter {
 			}
 
 		}else {
-
-
-			posicaoMovimentoCanoHorizontal -= deltaTime * 200;
 			velocidadeQueda++;
-
-
-
-
-
-			if (Gdx.input.justTouched()) {
-				velocidadeQueda = -12;
-
-			}
-
 			if (posicaoInicialVertical > 0 || velocidadeQueda < 0)
 				posicaoInicialVertical = posicaoInicialVertical - velocidadeQueda;
 
-			// Verifica se o cano saiu inteiramente da tela
-			if (posicaoMovimentoCanoHorizontal < -canoTopo.getHeight()) {
-				posicaoMovimentoCanoHorizontal = larguraDispositivo;
-				alturaEntreCanosRandomica = randomico.nextInt(400) - 200;
-				marcouPonto = false;
+			if (estadoJogo == 1){
 
-			}
+				posicaoMovimentoCanoHorizontal -= deltaTime * 200;
+				if (Gdx.input.justTouched()) {
+					velocidadeQueda = -12;
+
+				}
+				// Verifica se o cano saiu inteiramente da tela
+				if (posicaoMovimentoCanoHorizontal < -canoTopo.getHeight()) {
+					posicaoMovimentoCanoHorizontal = larguraDispositivo;
+					alturaEntreCanosRandomica = randomico.nextInt(400) - 200;
+					marcouPonto = false;
+
+				}
 				// Verifica ponuação
 				if (posicaoMovimentoCanoHorizontal < 120){
 					if ( !marcouPonto){
@@ -128,7 +129,17 @@ public class MyGdxGame extends ApplicationAdapter {
 
 				}
 
+			}else{ //Tela de Game Over
 
+				if (Gdx.input.justTouched()){
+					estadoJogo = 0;
+					pontuacao = 0;
+					velocidadeQueda = 0;
+					posicaoInicialVertical = alturaDispositivo / 2;
+					posicaoMovimentoCanoHorizontal = larguraDispositivo;
+				}
+
+			}
 
 		}
 		batch.begin();
@@ -139,6 +150,12 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch.draw(canoBaixo,posicaoMovimentoCanoHorizontal,alturaDispositivo / 2 - canoBaixo.getHeight() - espacoEntreCanos / 2 + Gdx.graphics.getDeltaTime() );
 		batch.draw(passaro[ (int)variacao ],120,posicaoInicialVertical);
 		fonte.draw(batch,String.valueOf(pontuacao),larguraDispositivo / 2,alturaDispositivo - 30);
+		if (estadoJogo == 2){
+			batch.draw(gameOver,larguraDispositivo / 2 - gameOver.getWidth() / 2, alturaDispositivo / 2);
+			mensagem.draw(batch,"Toque para reiniciar",larguraDispositivo / 2 - gameOver.getWidth() / 2, alturaDispositivo / 2 - gameOver.getHeight() / 2);
+		}
+
+
 		batch.end();
 
 		passaroCirculo.set(120 + passaro[0].getWidth() / 2,posicaoInicialVertical + passaro[0].getHeight() / 2,passaro[0].getWidth() / 2 );
@@ -161,8 +178,9 @@ public class MyGdxGame extends ApplicationAdapter {
 
 		//Teste de colisão
 
-		if (Intersector.overlaps(passaroCirculo,retanguloCanoBaixo )|| Intersector.overlaps(passaroCirculo,retanguloCanoTopo)){
-			Gdx.app.log("Colisão","Ouve Colisão");
+		if (Intersector.overlaps(passaroCirculo,retanguloCanoBaixo )|| Intersector.overlaps(passaroCirculo,retanguloCanoTopo)
+		|| posicaoInicialVertical <= 0 || posicaoInicialVertical >= alturaDispositivo ){
+			estadoJogo = 2;
 		}
 
 	}
