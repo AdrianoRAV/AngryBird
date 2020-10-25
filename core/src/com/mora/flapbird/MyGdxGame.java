@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
 
 import java.util.Random;
@@ -24,7 +25,7 @@ public class MyGdxGame extends ApplicationAdapter {
 	 private Circle passaroCirculo;
 	 private Rectangle retanguloCanoTopo;
 	 private Rectangle retanguloCanoBaixo;
-	 private ShapeRenderer shape;
+	// private ShapeRenderer shape;
 
 	//Atributos de configuração
 	private  int movimento = 30;
@@ -53,9 +54,9 @@ public class MyGdxGame extends ApplicationAdapter {
 		randomico = new Random();
 		fonte = new BitmapFont();
 		passaroCirculo = new Circle();
-		retanguloCanoTopo = new Rectangle();
+		/*retanguloCanoTopo = new Rectangle();
 		retanguloCanoBaixo = new  Rectangle();
-		shape = new ShapeRenderer();
+		shape = new ShapeRenderer();*/
 
 
 		fonte.setColor(Color.WHITE);
@@ -151,12 +152,19 @@ public class MyGdxGame extends ApplicationAdapter {
 		);
 
 		//Desenhar formulas para didatica
-		shape.begin(ShapeRenderer.ShapeType.Filled);
-		shape.circle(passaroCirculo.x,passaroCirculo.y,passaroCirculo.radius);
-		shape.rect(retanguloCanoBaixo.x,retanguloCanoBaixo.y,retanguloCanoBaixo.width,retanguloCanoBaixo.height);
-		shape.rect(retanguloCanoTopo.x,retanguloCanoTopo.y,retanguloCanoTopo.width,retanguloCanoTopo.height);
-		shape.setColor(Color.RED);
-		shape.end();
+//		shape.begin(ShapeRenderer.ShapeType.Filled);
+//		shape.circle(passaroCirculo.x,passaroCirculo.y,passaroCirculo.radius);
+//		shape.rect(retanguloCanoBaixo.x,retanguloCanoBaixo.y,retanguloCanoBaixo.width,retanguloCanoBaixo.height);
+//		shape.rect(retanguloCanoTopo.x,retanguloCanoTopo.y,retanguloCanoTopo.width,retanguloCanoTopo.height);
+//		shape.setColor(Color.RED);
+//		shape.end();
+
+		//Teste de colisão
+
+		if (Intersector.overlaps(passaroCirculo,retanguloCanoBaixo )|| Intersector.overlaps(passaroCirculo,retanguloCanoTopo)){
+			Gdx.app.log("Colisão","Ouve Colisão");
+		}
+
 	}
 	
 
