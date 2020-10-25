@@ -7,6 +7,9 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Rectangle;
 
 import java.util.Random;
 
@@ -18,6 +21,10 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Texture canoBaixo;
 	private Texture canoTopo;
 	private BitmapFont fonte;
+	 private Circle passaroCirculo;
+	 private Rectangle retanguloCanoTopo;
+	 private Rectangle retanguloCanoBaixo;
+	 private ShapeRenderer shape;
 
 	//Atributos de configuração
 	private  int movimento = 30;
@@ -45,6 +52,12 @@ public class MyGdxGame extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		randomico = new Random();
 		fonte = new BitmapFont();
+		passaroCirculo = new Circle();
+		retanguloCanoTopo = new Rectangle();
+		retanguloCanoBaixo = new  Rectangle();
+		shape = new ShapeRenderer();
+
+
 		fonte.setColor(Color.WHITE);
 		fonte.getData().setScale(6);
 
@@ -127,6 +140,23 @@ public class MyGdxGame extends ApplicationAdapter {
 		fonte.draw(batch,String.valueOf(pontuacao),larguraDispositivo / 2,alturaDispositivo - 30);
 		batch.end();
 
+		passaroCirculo.set(120 + passaro[0].getWidth() / 2,posicaoInicialVertical + passaro[0].getHeight() / 2,passaro[0].getWidth() / 2 );
+		retanguloCanoBaixo = new Rectangle(
+				posicaoMovimentoCanoHorizontal,alturaDispositivo / 2 - canoBaixo.getHeight() - espacoEntreCanos / 2 + Gdx.graphics.getDeltaTime(),
+				canoBaixo.getWidth(),canoBaixo.getHeight()
+		);
+		retanguloCanoTopo = new Rectangle(
+				posicaoMovimentoCanoHorizontal,alturaDispositivo / 2 + espacoEntreCanos / 2 + alturaEntreCanosRandomica,canoTopo.getWidth(),
+				canoTopo.getHeight()
+		);
+
+		//Desenhar formulas para didatica
+		shape.begin(ShapeRenderer.ShapeType.Filled);
+		shape.circle(passaroCirculo.x,passaroCirculo.y,passaroCirculo.radius);
+		shape.rect(retanguloCanoBaixo.x,retanguloCanoBaixo.y,retanguloCanoBaixo.width,retanguloCanoBaixo.height);
+		shape.rect(retanguloCanoTopo.x,retanguloCanoTopo.y,retanguloCanoTopo.width,retanguloCanoTopo.height);
+		shape.setColor(Color.RED);
+		shape.end();
 	}
 	
 
