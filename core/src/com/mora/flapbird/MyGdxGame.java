@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -11,6 +12,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.Random;
 
@@ -31,8 +34,8 @@ public class MyGdxGame extends ApplicationAdapter {
 
 	//Atributos de configuração
 	private  int movimento = 30;
-	private int larguraDispositivo;
-	private int alturaDispositivo;
+	private float larguraDispositivo;
+	private float alturaDispositivo;
 	private  int estadoJogo = 0; // 0 -> jogo não iniciado ,1 -> jogo iniciado, 2 -> Game Over
 	private int pontuacao = 0;
 
@@ -47,6 +50,13 @@ public class MyGdxGame extends ApplicationAdapter {
 	private Random randomico;
 	private float alturaEntreCanosRandomica;
 	private  boolean marcouPonto = false;
+
+	//Câmera
+
+	private OrthographicCamera camera;
+	private Viewport viewport;
+	private final float VIRTUAL_WIDTH = 768;
+	private final float VIRTUAL_HEIGHT = 1024;
 
 	@Override
 	public void create () {
@@ -78,8 +88,16 @@ public class MyGdxGame extends ApplicationAdapter {
 		canoTopo = new Texture("cano_topo.png");
 		gameOver = new Texture("game_over.png");
 
-		larguraDispositivo = Gdx.graphics.getWidth();
-		alturaDispositivo = Gdx.graphics.getHeight();
+		/*
+			Configuração da câmera
+		 */
+			camera = new OrthographicCamera();
+			camera.position.set(VIRTUAL_WIDTH / 2,VIRTUAL_HEIGHT / 2,0);
+			viewport = new StretchViewport(VIRTUAL_WIDTH,VIRTUAL_HEIGHT,camera);
+
+		larguraDispositivo = VIRTUAL_WIDTH;
+		alturaDispositivo = VIRTUAL_HEIGHT;
+
 		posicaoInicialVertical = alturaDispositivo / 2;
 		posicaoMovimentoCanoHorizontal = larguraDispositivo ;
 		espacoEntreCanos = 250;
@@ -90,6 +108,9 @@ public class MyGdxGame extends ApplicationAdapter {
 	@Override
 	public void render () {
 		//movimento ++;
+		camera.update();
+		//Limpar frames anteriores para não usar tanta memoria
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_COLOR_BUFFER_BIT);
 
 		deltaTime = Gdx.graphics.getDeltaTime();
 		variacao += deltaTime * 7; //velocidade de bater asas
@@ -142,6 +163,9 @@ public class MyGdxGame extends ApplicationAdapter {
 			}
 
 		}
+
+		//Configurar dados de projeção da câmera
+		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
 
 
@@ -183,7 +207,9 @@ public class MyGdxGame extends ApplicationAdapter {
 			estadoJogo = 2;
 		}
 
+	}public void resize(int width,int heigth){
+
+		viewport.update(width,heigth);
 	}
-	
 
 }
